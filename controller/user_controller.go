@@ -3,8 +3,9 @@ package controller
 import (
 	"database/sql"
 	"github.com/gin-gonic/gin"
-	"github.com/sunil206b/users_api/model"
+	"github.com/sunil206b/users_api/dto"
 	"github.com/sunil206b/users_api/service"
+	"github.com/sunil206b/users_api/utils/errors"
 	"net/http"
 )
 
@@ -20,16 +21,15 @@ type UserController struct {
 }
 
 func (u *UserController) CreateUser(c *gin.Context) {
-	var user model.User
-	err := c.ShouldBindJSON(&user)
-	if err != nil {
-		// TODO : Handle Error
+	var user dto.UserDTO
+	if err := c.ShouldBindJSON(&user); err != nil {
+		errMsg := errors.NewBadRequest("Invalid json body")
+		c.JSON(errMsg.StatusCode, errMsg)
 		return
 	}
-
-	result, err := u.us.CreateUser(user)
+	result, err := u.us.CreateUse(user)
 	if err != nil {
-		// TODO: handle user creation error
+		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 	c.JSON(http.StatusCreated, result)

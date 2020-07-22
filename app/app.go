@@ -11,5 +11,5 @@ var (
 // StartApp function is used to configure all the url's
 func StartApp(db *sql.DB) {
 	mapUrls(db)
-	router.Run("8080")
+	router.Run(":8080")
 }
