@@ -1,10 +1,16 @@
 package main
 
 import (
-	"database/sql"
+	"github.com/subosito/gotenv"
 	"github.com/sunil206b/users_api/app"
+	"github.com/sunil206b/users_api/driver"
 )
 
+func init() {
+	gotenv.Load()
+}
+
 func main() {
-	app.StartApp(&sql.DB{})
+	db := driver.MysqlConn()
+	app.StartApp(db)
 }

@@ -2,11 +2,12 @@ package repo
 
 import (
 	"github.com/sunil206b/users_api/model"
+	"github.com/sunil206b/users_api/utils/errors"
 )
 
 type IUserRepo interface {
-	CreateUser(user *model.User) error
-	GetUser(userId int) (*model.User, error)
-	UpdateUser(user *model.User) error
-	DeleteUser(userId int) (bool, error)
+	CreateUser(user *model.User) *errors.RestErr
+	GetUser(userId int64) (*model.User, *errors.RestErr)
+	UpdateUser(user *model.User) *errors.RestErr
+	DeleteUser(userId int64) (bool, *errors.RestErr)
 }
