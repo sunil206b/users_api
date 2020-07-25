@@ -17,27 +17,35 @@ type UserDTO struct {
 	Phone       string `json:"phone"`
 	Email       string `json:"email"`
 	Password    string `json:"password"`
-	DateCreated string `json:"date_created"`
-	DateUpdated string `json:"date_updated"`
 }
 
 func (userDTO UserDTO) Validate() *errors.RestErr {
+	userDTO.FirstName = strings.TrimSpace(userDTO.FirstName)
+	userDTO.LastName = strings.TrimSpace(userDTO.LastName)
+	userDTO.Birth = strings.TrimSpace(userDTO.Birth)
+	userDTO.Phone = strings.TrimSpace(userDTO.Phone)
+	userDTO.Gender = strings.TrimSpace(userDTO.Gender)
 	userDTO.Email = strings.TrimSpace(strings.ToLower(userDTO.Email))
+	userDTO.Password = strings.TrimSpace(userDTO.Password)
 	if userDTO.Email == "" {
 		return errors.NewBadRequest("invalid email address")
 	}
 	return nil
 }
 
-func (userDTO UserDTO) CopyToUser(user *model.User) {
+func (userDTO UserDTO) CopyToUser(user *model.User) *errors.RestErr{
 	user.Id = userDTO.Id
 	user.FirstName = userDTO.FirstName
 	user.LastName = userDTO.LastName
+	if errMsg := userDTO.SetBirthToUser(user); errMsg != nil {
+		return errMsg
+	}
 	user.Gender = userDTO.Gender
 	user.Phone = userDTO.Phone
 	user.Email = userDTO.Email
 	user.Password = userDTO.Password
 	user.DateUpdated = time.Now()
+	return nil
 }
 
 func (userDTO *UserDTO) CopyToDTO(user *model.User) {
@@ -49,6 +57,41 @@ func (userDTO *UserDTO) CopyToDTO(user *model.User) {
 	userDTO.Phone = user.Phone
 	userDTO.Email = user.Email
 	userDTO.Password = user.Password
-	userDTO.DateCreated = date.GetFmtDate(user.DateCreated)
-	userDTO.DateUpdated = date.GetFmtDate(user.DateUpdated)
+}
+
+func (userDTO *UserDTO) SetBirthToUser(user *model.User) *errors.RestErr {
+	age, err := date.ConvertToDate(userDTO.Birth)
+	if err != nil {
+		return errors.NewBadRequest(err.Error())
+	}
+	user.Birth = age
+	return nil
+}
+
+func (userDTO *UserDTO) PartialUpdate(user *model.User) *errors.RestErr {
+	if userDTO.FirstName != "" {
+		user.FirstName = userDTO.FirstName
+	}
+	if userDTO.LastName != "" {
+		user.LastName = userDTO.LastName
+	}
+	if userDTO.Birth != "" {
+		if errMsg := userDTO.SetBirthToUser(user); errMsg != nil {
+			return errMsg
+		}
+	}
+	if userDTO.Gender != "" {
+		user.Gender = userDTO.Gender
+	}
+	if userDTO.Phone != "" {
+		user.Phone = userDTO.Phone
+	}
+	if userDTO.Email != "" {
+		user.Email = userDTO.Email
+	}
+	if userDTO.Password != "" {
+		user.Password = userDTO.Password
+	}
+	user.DateUpdated = time.Now()
+	return nil
 }

@@ -12,6 +12,8 @@ const (
 	indexUnique = "unique"
 	userInsert = "INSERT INTO users(first_name, last_name, birth, gender, phone, email, password, created_at, updated_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)"
 	queryGetUser = "SELECT id, first_name, last_name, birth, gender, phone, email, password,  created_at,  updated_at  FROM users WHERE id=?"
+	queryUpdate = "UPDATE users set first_name=?, last_name=?, birth=?, gender=?, phone=?, email=?, password=?,  updated_at=? WHERE id=?"
+	queryDelete = "DELETE FROM users WHERE id=?"
 )
 
 var (
@@ -53,7 +55,7 @@ func (u *userRepo) CreateUser(user *model.User) *errors.RestErr {
 func (u *userRepo)  GetUser(userId int64) (*model.User, *errors.RestErr) {
 	stmt, err := u.conn.Prepare(queryGetUser)
 	if err != nil {
-		return nil, errors.NewInternalServerError(fmt.Sprintf("error when trying to save user %s", err.Error()))
+		return nil, errors.NewInternalServerError(fmt.Sprintf("error when trying to get user %s", err.Error()))
 	}
 	defer stmt.Close()
 
@@ -69,9 +71,31 @@ func (u *userRepo)  GetUser(userId int64) (*model.User, *errors.RestErr) {
 }
 
 func (u *userRepo) UpdateUser(user *model.User) *errors.RestErr {
+	stmt, err := u.conn.Prepare(queryUpdate)
+	if err != nil {
+		return errors.NewInternalServerError(fmt.Sprintf("error when trying to save user %s", err.Error()))
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(user.FirstName, user.LastName, user.Birth, user.Gender, user.Phone, user.Email, user.Password, user.DateUpdated, user.Id)
+	if err != nil {
+		if strings.Contains(strings.ToLower(err.Error()), indexUnique) {
+			return errors.NewBadRequest(fmt.Sprintf("email %s already exists", user.Email))
+		}
+		return errors.NewInternalServerError(fmt.Sprintf("error when trying to save user %s", err.Error()))
+	}
 	return nil
 }
 
-func (u *userRepo) DeleteUser(userId int64) (bool, *errors.RestErr) {
-	return false, nil
+func (u *userRepo) DeleteUser(userId int64)  *errors.RestErr {
+	stmt, err := u.conn.Prepare(queryDelete)
+	if err != nil {
+		return errors.NewInternalServerError(fmt.Sprintf("error when trying to delete user %s", err.Error()))
+	}
+	defer stmt.Close()
+
+	if _, err = stmt.Exec(userId); err != nil {
+		return errors.NewInternalServerError(fmt.Sprintf("error when trying to delete user %s", err.Error()))
+	}
+	return nil
 }

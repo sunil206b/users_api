@@ -9,5 +9,5 @@ type IUserRepo interface {
 	CreateUser(user *model.User) *errors.RestErr
 	GetUser(userId int64) (*model.User, *errors.RestErr)
 	UpdateUser(user *model.User) *errors.RestErr
-	DeleteUser(userId int64) (bool, *errors.RestErr)
+	DeleteUser(userId int64) *errors.RestErr
 }
