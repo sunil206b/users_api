@@ -20,19 +20,17 @@ func NewUserService(db *sql.DB) *UserService {
 }
 
 func (us *UserService) CreateUse(userDTO dto.UserDTO) (*dto.UserDTO, *errors.RestErr) {
-	errMsg := userDTO.Validate()
-	if errMsg != nil {
-		 return nil, errMsg
-	}
 	var user model.User
-	if errMsg = userDTO.CopyToUser(&user); errMsg != nil {
+	if errMsg := userDTO.CopyToUser(&user); errMsg != nil {
 		return nil, errMsg
 	}
-	user.DateCreated = time.Now()
-	if errMsg = us.repo.CreateUser(&user); errMsg != nil {
+	user.DateCreated = time.Now().UTC()
+	if errMsg := us.repo.CreateUser(&user); errMsg != nil {
 		return nil, errMsg
 	}
 	userDTO.Id = user.Id
+	userDTO.Password = user.Password
+	userDTO.Status = user.Status
 	return &userDTO, nil
 }
 
@@ -47,30 +45,25 @@ func (us *UserService) GetUser(userId int64) (*dto.UserDTO, *errors.RestErr) {
 }
 
 func (us *UserService) UpdateUser(isPartial bool, userDTO dto.UserDTO) (*dto.UserDTO, *errors.RestErr) {
-	errMsg := userDTO.Validate()
+	user, errMsg := us.repo.GetUser(userDTO.Id)
 	if errMsg != nil {
 		return nil, errMsg
 	}
-
-	var user model.User
 	if isPartial {
-		user1, errMsg := us.repo.GetUser(userDTO.Id)
+		errMsg = userDTO.PartialUpdate(user)
 		if errMsg != nil {
 			return nil, errMsg
 		}
-		user = *user1
-		errMsg = userDTO.PartialUpdate(&user)
-		if errMsg != nil {
-			return nil, errMsg
-		}
-		userDTO.CopyToDTO(&user)
+		userDTO.CopyToDTO(user)
 	} else {
-		if errMsg := userDTO.CopyToUser(&user); errMsg != nil {
+		if errMsg := userDTO.CopyToUser(user); errMsg != nil {
 			return nil, errMsg
 		}
+		userDTO.Status = user.Status
+		userDTO.Password = user.Password
 	}
 
-	if errMsg := us.repo.UpdateUser(&user); errMsg != nil {
+	if errMsg := us.repo.UpdateUser(user); errMsg != nil {
 		return nil, errMsg
 	}
 	return &userDTO, nil
@@ -81,4 +74,18 @@ func (us *UserService) DeleteUser(userId int64) *errors.RestErr {
 		return errMsg
 	}
 	return nil
+}
+
+func (us *UserService) Search(status string) ([]dto.UserDTO, *errors.RestErr) {
+	users, errMsg := us.repo.Search(status)
+	if errMsg != nil {
+		return nil, errMsg
+	}
+	userDTOs := make([]dto.UserDTO, 0)
+	for _, user := range users {
+		userDTO := dto.UserDTO{}
+		userDTO.CopyToDTO(&user)
+		userDTOs = append(userDTOs, userDTO)
+	}
+	return userDTOs, nil
 }

@@ -2,6 +2,7 @@ package dto
 
 import (
 	"github.com/sunil206b/users_api/model"
+	"github.com/sunil206b/users_api/utils/crypt"
 	"github.com/sunil206b/users_api/utils/date"
 	"github.com/sunil206b/users_api/utils/errors"
 	"strings"
@@ -9,17 +10,18 @@ import (
 )
 
 type UserDTO struct {
-	Id          int64    `json:"id"`
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	Birth       string `json:"birth"`
-	Gender      string `json:"gender"`
-	Phone       string `json:"phone"`
-	Email       string `json:"email"`
-	Password    string `json:"password"`
+	Id        int64  `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Birth     string `json:"birth"`
+	Gender    string `json:"gender"`
+	Phone     string `json:"phone"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	Status    string `json:"status"`
 }
 
-func (userDTO UserDTO) Validate() *errors.RestErr {
+func (userDTO UserDTO) Validate() []*errors.RestErr {
 	userDTO.FirstName = strings.TrimSpace(userDTO.FirstName)
 	userDTO.LastName = strings.TrimSpace(userDTO.LastName)
 	userDTO.Birth = strings.TrimSpace(userDTO.Birth)
@@ -27,13 +29,32 @@ func (userDTO UserDTO) Validate() *errors.RestErr {
 	userDTO.Gender = strings.TrimSpace(userDTO.Gender)
 	userDTO.Email = strings.TrimSpace(strings.ToLower(userDTO.Email))
 	userDTO.Password = strings.TrimSpace(userDTO.Password)
-	if userDTO.Email == "" {
-		return errors.NewBadRequest("invalid email address")
+	errMsg := make([]*errors.RestErr, 0)
+	if userDTO.FirstName == "" {
+		errMsg = append(errMsg, errors.NewBadRequest("First Name is required"))
 	}
-	return nil
+	if userDTO.LastName == "" {
+		errMsg = append(errMsg, errors.NewBadRequest("Last Name is required"))
+	}
+	if userDTO.Birth == "" {
+		errMsg = append(errMsg, errors.NewBadRequest("Date of Birth is required"))
+	}
+	if userDTO.Phone == "" {
+		errMsg = append(errMsg, errors.NewBadRequest("Phone number is required"))
+	}
+	if userDTO.Gender == "" {
+		errMsg = append(errMsg, errors.NewBadRequest("Gender is required"))
+	}
+	if userDTO.Email == "" {
+		errMsg = append(errMsg, errors.NewBadRequest("invalid email address"))
+	}
+	if userDTO.Password == "" {
+		errMsg = append(errMsg, errors.NewBadRequest("invalid password"))
+	}
+	return errMsg
 }
 
-func (userDTO UserDTO) CopyToUser(user *model.User) *errors.RestErr{
+func (userDTO UserDTO) CopyToUser(user *model.User) *errors.RestErr {
 	user.Id = userDTO.Id
 	user.FirstName = userDTO.FirstName
 	user.LastName = userDTO.LastName
@@ -43,8 +64,11 @@ func (userDTO UserDTO) CopyToUser(user *model.User) *errors.RestErr{
 	user.Gender = userDTO.Gender
 	user.Phone = userDTO.Phone
 	user.Email = userDTO.Email
-	user.Password = userDTO.Password
-	user.DateUpdated = time.Now()
+	if password := crypt.GetMd5(userDTO.Password); user.Password != password {
+		user.Password = password
+	}
+	user.DateUpdated = time.Now().UTC()
+	user.Status = "active"
 	return nil
 }
 
@@ -57,6 +81,7 @@ func (userDTO *UserDTO) CopyToDTO(user *model.User) {
 	userDTO.Phone = user.Phone
 	userDTO.Email = user.Email
 	userDTO.Password = user.Password
+	userDTO.Status = user.Status
 }
 
 func (userDTO *UserDTO) SetBirthToUser(user *model.User) *errors.RestErr {
@@ -90,7 +115,9 @@ func (userDTO *UserDTO) PartialUpdate(user *model.User) *errors.RestErr {
 		user.Email = userDTO.Email
 	}
 	if userDTO.Password != "" {
-		user.Password = userDTO.Password
+		if password := crypt.GetMd5(userDTO.Password); user.Password != password {
+			user.Password = password
+		}
 	}
 	user.DateUpdated = time.Now()
 	return nil

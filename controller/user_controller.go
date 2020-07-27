@@ -10,8 +10,7 @@ import (
 	"strconv"
 )
 
-
-func NewUserController(db *sql.DB) *UserController{
+func NewUserController(db *sql.DB) *UserController {
 	return &UserController{
 		us: service.NewUserService(db),
 	}
@@ -36,6 +35,10 @@ func (u *UserController) CreateUser(c *gin.Context) {
 		c.JSON(errMsg.StatusCode, errMsg)
 		return
 	}
+	if errsMsg := user.Validate(); len(errsMsg) != 0 {
+		c.JSON(errsMsg[0].StatusCode, errsMsg)
+		return
+	}
 	result, err := u.us.CreateUse(user)
 	if err != nil {
 		c.JSON(err.StatusCode, err)
@@ -58,10 +61,6 @@ func (u *UserController) GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, userDTO)
 }
 
-func (u *UserController) SearchUser(c *gin.Context) {
-	c.String(http.StatusNotImplemented, "implement me!")
-}
-
 func (u *UserController) UpdateUser(c *gin.Context) {
 	userId, errMsg := getUserId(c.Param("user_id"))
 	if errMsg != nil {
@@ -78,6 +77,12 @@ func (u *UserController) UpdateUser(c *gin.Context) {
 
 	userDto.Id = userId
 	isPartial := c.Request.Method == http.MethodPatch
+	if !isPartial {
+		if errsMsg := userDto.Validate(); len(errsMsg) != 0 {
+			c.JSON(errsMsg[0].StatusCode, errsMsg)
+			return
+		}
+	}
 	result, errMSg := u.us.UpdateUser(isPartial, userDto)
 	if errMSg != nil {
 		c.JSON(errMSg.StatusCode, errMSg)
@@ -98,4 +103,14 @@ func (u *UserController) DeleteUser(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
+}
+
+func (u *UserController) SearchUsers(c *gin.Context) {
+	status := c.Query("status")
+	users, errMsg := u.us.Search(status)
+	if errMsg != nil {
+		c.JSON(errMsg.StatusCode, errMsg)
+		return
+	}
+	c.JSON(http.StatusOK, users)
 }

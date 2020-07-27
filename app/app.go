@@ -8,6 +8,7 @@ import (
 var (
 	router = gin.Default()
 )
+
 // StartApp function is used to configure all the url's
 func StartApp(db *sql.DB) {
 	mapUrls(db)

@@ -10,4 +10,5 @@ type IUserRepo interface {
 	GetUser(userId int64) (*model.User, *errors.RestErr)
 	UpdateUser(user *model.User) *errors.RestErr
 	DeleteUser(userId int64) *errors.RestErr
+	Search(status string) ([]model.User, *errors.RestErr)
 }
