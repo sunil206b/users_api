@@ -17,7 +17,7 @@ func NewUserController(db *sql.DB) *UserController {
 }
 
 type UserController struct {
-	us *service.UserService
+	us service.IUserService
 }
 
 func getUserId(userIdParam string) (int64, *errors.RestErr) {

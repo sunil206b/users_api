@@ -9,17 +9,17 @@ import (
 	"time"
 )
 
-type UserService struct {
+type userService struct {
 	repo repo.IUserRepo
 }
 
-func NewUserService(db *sql.DB) *UserService {
-	return &UserService{
+func NewUserService(db *sql.DB) IUserService {
+	return &userService{
 		repo: repo.NewUserRepo(db),
 	}
 }
 
-func (us *UserService) CreateUse(userDTO dto.UserDTO) (*dto.UserDTO, *errors.RestErr) {
+func (us *userService) CreateUse(userDTO dto.UserDTO) (*dto.UserDTO, *errors.RestErr) {
 	var user model.User
 	if errMsg := userDTO.CopyToUser(&user); errMsg != nil {
 		return nil, errMsg
@@ -34,7 +34,7 @@ func (us *UserService) CreateUse(userDTO dto.UserDTO) (*dto.UserDTO, *errors.Res
 	return &userDTO, nil
 }
 
-func (us *UserService) GetUser(userId int64) (*dto.UserDTO, *errors.RestErr) {
+func (us *userService) GetUser(userId int64) (*dto.UserDTO, *errors.RestErr) {
 	user, err := us.repo.GetUser(userId)
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (us *UserService) GetUser(userId int64) (*dto.UserDTO, *errors.RestErr) {
 	return &userDto, nil
 }
 
-func (us *UserService) UpdateUser(isPartial bool, userDTO dto.UserDTO) (*dto.UserDTO, *errors.RestErr) {
+func (us *userService) UpdateUser(isPartial bool, userDTO dto.UserDTO) (*dto.UserDTO, *errors.RestErr) {
 	user, errMsg := us.repo.GetUser(userDTO.Id)
 	if errMsg != nil {
 		return nil, errMsg
@@ -69,14 +69,14 @@ func (us *UserService) UpdateUser(isPartial bool, userDTO dto.UserDTO) (*dto.Use
 	return &userDTO, nil
 }
 
-func (us *UserService) DeleteUser(userId int64) *errors.RestErr {
+func (us *userService) DeleteUser(userId int64) *errors.RestErr {
 	if errMsg := us.repo.DeleteUser(userId); errMsg != nil {
 		return errMsg
 	}
 	return nil
 }
 
-func (us *UserService) Search(status string) ([]dto.UserDTO, *errors.RestErr) {
+func (us *userService) Search(status string) ([]dto.UserDTO, *errors.RestErr) {
 	users, errMsg := us.repo.Search(status)
 	if errMsg != nil {
 		return nil, errMsg
