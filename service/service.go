@@ -11,4 +11,5 @@ type IUserService interface {
 	UpdateUser(isPartial bool, userDTO dto.UserDTO) (*dto.UserDTO, *errors.RestErr)
 	DeleteUser(userId int64) *errors.RestErr
 	Search(status string) ([]dto.UserDTO, *errors.RestErr)
+	FindUserByEmail(email string) (*dto.UserDTO, *errors.RestErr)
 }

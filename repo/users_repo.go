@@ -13,10 +13,12 @@ import (
 const (
 	indexUnique = "unique"
 	userInsert = "INSERT INTO users(first_name, last_name, birth, gender, phone, email, password, created_at, updated_at, status) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-	queryGetUser = "SELECT id, first_name, last_name, birth, gender, phone, email, password,  created_at,  updated_at, status  FROM users WHERE id=?"
+	queryGetUser = "SELECT id, first_name, last_name, birth, gender, phone, email, password, status  FROM users WHERE id=?"
 	queryUpdate = "UPDATE users set first_name=?, last_name=?, birth=?, gender=?, phone=?, email=?, password=?,  updated_at=?, status=? WHERE id=?"
 	queryDelete = "UPDATE users set status=?, updated_at=? WHERE id=?"
-	queryByStatus = "SELECT id, first_name, last_name, birth, gender, phone, email, password,  created_at,  updated_at, status  FROM users WHERE status=?"
+	queryByStatus = "SELECT id, first_name, last_name, birth, gender, phone, email, password, status  FROM users WHERE status=?"
+	queryFindByEmail = "SELECT id, first_name, last_name, birth, gender, phone, email, password, status  FROM users WHERE email=? AND status=?"
+	status = "active"
 )
 
 var (
@@ -69,7 +71,7 @@ func (u *userRepo)  GetUser(userId int64) (*model.User, *errors.RestErr) {
 
 	result := stmt.QueryRow(userId)
 	var user model.User
-	if err := result.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Birth, &user.Gender, &user.Phone, &user.Email, &user.Password, &user.DateCreated, &user.DateUpdated, &user.Status); err != nil {
+	if err := result.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Birth, &user.Gender, &user.Phone, &user.Email, &user.Password, &user.Status); err != nil {
 		if err == sql.ErrNoRows {
 			logger.Error("error when trying to get user by id ", err)
 			return nil, errors.NewNotFoundError(fmt.Sprintf("user %d not found", userId))
@@ -133,7 +135,7 @@ func (u *userRepo) Search(status string) ([]model.User, *errors.RestErr) {
 	users := make([]model.User, 0)
 	for rows.Next() {
 		user := model.User{}
-		if err = rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Birth, &user.Gender, &user.Phone, &user.Email, &user.Password, &user.DateCreated, &user.DateUpdated, &user.Status); err != nil {
+		if err = rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Birth, &user.Gender, &user.Phone, &user.Email, &user.Password, &user.Status); err != nil {
 			logger.Error("error when scanning users from row", err)
 			return nil, errors.NewNotFoundError("error when searching for users")
 		}
@@ -144,4 +146,25 @@ func (u *userRepo) Search(status string) ([]model.User, *errors.RestErr) {
 		return nil, errors.NewNotFoundError(fmt.Sprintf("no user found with status %s", status))
 	}
 	return users, nil
+}
+
+func (u *userRepo) FindByEmail(email string) (*model.User, *errors.RestErr) {
+	stmt, err := u.conn.Prepare(queryFindByEmail)
+	if err != nil {
+		logger.Error("error when trying to prepare find user by email statement", err)
+		return nil, errors.NewInternalServerError("data base error")
+	}
+	defer stmt.Close()
+
+	result := stmt.QueryRow(email, status)
+	var user model.User
+	if err := result.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Birth, &user.Gender, &user.Phone, &user.Email, &user.Password, &user.Status); err != nil {
+		if err == sql.ErrNoRows {
+			logger.Error("error when trying to find user by email ", err)
+			return nil, errors.NewNotFoundError(fmt.Sprintf("no active user found with given email %s", email))
+		}
+		logger.Error("error when trying to find user by emil ", err)
+		return nil, errors.NewInternalServerError(fmt.Sprintf("error when trying to find user with %s", email))
+	}
+	return &user, nil
 }

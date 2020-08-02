@@ -13,4 +13,5 @@ func mapUrls(db *sql.DB) {
 	router.PATCH("/users/:user_id", userH.UpdateUser)
 	router.DELETE("/users/:user_id", userH.DeleteUser)
 	router.GET("/internal/users/search", userH.SearchUsers)
+	router.GET("/login/users/:email", userH.Login)
 }

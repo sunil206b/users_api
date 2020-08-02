@@ -8,6 +8,7 @@ import (
 	"github.com/sunil206b/users_api/utils/errors"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func NewUserController(db *sql.DB) *UserController {
@@ -113,4 +114,14 @@ func (u *UserController) SearchUsers(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, users)
+}
+
+func (u *UserController) Login(c *gin.Context) {
+	email := strings.TrimSpace(c.Param("email"))
+	user, errMsg := u.us.FindUserByEmail(email)
+	if errMsg != nil {
+		c.JSON(errMsg.StatusCode, errMsg)
+		return
+	}
+	c.JSON(http.StatusOK, user)
 }

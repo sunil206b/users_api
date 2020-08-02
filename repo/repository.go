@@ -11,4 +11,5 @@ type IUserRepo interface {
 	UpdateUser(user *model.User) *errors.RestErr
 	DeleteUser(userId int64) *errors.RestErr
 	Search(status string) ([]model.User, *errors.RestErr)
+	FindByEmail(email string) (*model.User, *errors.RestErr)
 }
