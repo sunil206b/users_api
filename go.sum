@@ -39,8 +39,8 @@ github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UV
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/subosito/gotenv v1.2.0 h1:Slr1R9HxAlEKefgq5jn9U+DnETlIUa6HfgEzj0g5d7s=
 github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69rRypqCw=
-github.com/sunil206b/oauth_api v0.0.0-20200801124233-41b989ca0dec h1:Ht4rpaPV2nCpmiVTF2FvWrD6Ozx7qGIYMs288+KOBDw=
-github.com/sunil206b/oauth_api v0.0.0-20200801124233-41b989ca0dec/go.mod h1:rpgKsJlbuoc3E1w2qqzGeSdd3/GIsV7HUYRIYGz6ALE=
+github.com/sunil206b/oauth_api v0.0.0-20200805211010-da79b8dcc0c9 h1:Hc9TH4R8UC2dAl/Aom1D++GwW+KIbmOxMG/kxu7fD7c=
+github.com/sunil206b/oauth_api v0.0.0-20200805211010-da79b8dcc0c9/go.mod h1:rpgKsJlbuoc3E1w2qqzGeSdd3/GIsV7HUYRIYGz6ALE=
 github.com/sunil206b/oauth_go v0.0.0-20200805114841-00396720a587 h1:4vfbe5lqDbjrBce6XfGUK6rnMNn/iVvkG1Y8wec5mqQ=
 github.com/sunil206b/oauth_go v0.0.0-20200805114841-00396720a587/go.mod h1:i9kk6EUvrlxPTgoB0nUc6udstnMIFcZsdprbEiQ1/No=
 github.com/ugorji/go v1.1.7 h1:/68gy2h+1mWMrwZFeD1kQialdSzAb432dtpeJ42ovdo=
