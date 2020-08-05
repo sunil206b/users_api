@@ -90,12 +90,12 @@ func (us *userService) Search(status string) ([]dto.UserDTO, *errors.RestErr) {
 	return userDTOs, nil
 }
 
-func (us *userService) FindUserByEmail(email string) (*dto.UserDTO, *errors.RestErr) {
+func (us *userService) FindUserByEmail(email string) (*dto.LoginUserDTO, *errors.RestErr) {
 	user, err := us.repo.FindByEmail(email)
 	if err != nil {
 		return nil, err
 	}
-	var userDto dto.UserDTO
-	userDto.CopyToDTO(user)
+	var userDto dto.LoginUserDTO
+	userDto.CopyToLoginDTO(user)
 	return &userDto, nil
 }

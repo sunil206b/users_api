@@ -15,3 +15,9 @@ type User struct {
 	DateUpdated time.Time `json:"date_updated"`
 	Status      string    `json:"status"`
 }
+
+type LoginUser struct {
+	Id          int64     `json:"id"`
+	Email       string    `json:"email"`
+	Password    string    `json:"password"`
+}

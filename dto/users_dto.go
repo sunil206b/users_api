@@ -21,6 +21,18 @@ type UserDTO struct {
 	Status    string `json:"status"`
 }
 
+type LoginUserDTO struct {
+	Id        int64  `json:"id"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+}
+
+func (loginUser *LoginUserDTO) CopyToLoginDTO(user *model.LoginUser) {
+	loginUser.Id = user.Id
+	loginUser.Email = user.Email
+	loginUser.Password = user.Password
+}
+
 func (userDTO UserDTO) Validate() []*errors.RestErr {
 	userDTO.FirstName = strings.TrimSpace(userDTO.FirstName)
 	userDTO.LastName = strings.TrimSpace(userDTO.LastName)

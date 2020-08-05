@@ -17,7 +17,7 @@ const (
 	queryUpdate = "UPDATE users set first_name=?, last_name=?, birth=?, gender=?, phone=?, email=?, password=?,  updated_at=?, status=? WHERE id=?"
 	queryDelete = "UPDATE users set status=?, updated_at=? WHERE id=?"
 	queryByStatus = "SELECT id, first_name, last_name, birth, gender, phone, email, password, status  FROM users WHERE status=?"
-	queryFindByEmail = "SELECT id, first_name, last_name, birth, gender, phone, email, password, status  FROM users WHERE email=? AND status=?"
+	queryFindByEmail = "SELECT id, email, password FROM users WHERE email=? AND status=?"
 	status = "active"
 )
 
@@ -148,7 +148,7 @@ func (u *userRepo) Search(status string) ([]model.User, *errors.RestErr) {
 	return users, nil
 }
 
-func (u *userRepo) FindByEmail(email string) (*model.User, *errors.RestErr) {
+func (u *userRepo) FindByEmail(email string) (*model.LoginUser, *errors.RestErr) {
 	stmt, err := u.conn.Prepare(queryFindByEmail)
 	if err != nil {
 		logger.Error("error when trying to prepare find user by email statement", err)
@@ -157,8 +157,8 @@ func (u *userRepo) FindByEmail(email string) (*model.User, *errors.RestErr) {
 	defer stmt.Close()
 
 	result := stmt.QueryRow(email, status)
-	var user model.User
-	if err := result.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Birth, &user.Gender, &user.Phone, &user.Email, &user.Password, &user.Status); err != nil {
+	var user model.LoginUser
+	if err := result.Scan(&user.Id, &user.Email, &user.Password); err != nil {
 		if err == sql.ErrNoRows {
 			logger.Error("error when trying to find user by email ", err)
 			return nil, errors.NewNotFoundError(fmt.Sprintf("no active user found with given email %s", email))

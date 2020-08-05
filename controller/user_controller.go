@@ -3,6 +3,7 @@ package controller
 import (
 	"database/sql"
 	"github.com/gin-gonic/gin"
+	"github.com/sunil206b/oauth_go/oauth"
 	"github.com/sunil206b/users_api/dto"
 	"github.com/sunil206b/users_api/service"
 	"github.com/sunil206b/users_api/utils/errors"
@@ -49,6 +50,10 @@ func (u *UserController) CreateUser(c *gin.Context) {
 }
 
 func (u *UserController) GetUser(c *gin.Context) {
+	if err := oauth.AuthenticateRequest(c.Request); err != nil {
+		c.JSON(err.StatusCode, err)
+		return
+	}
 	userId, errMsg := getUserId(c.Param("user_id"))
 	if errMsg != nil {
 		c.JSON(errMsg.StatusCode, errMsg)
