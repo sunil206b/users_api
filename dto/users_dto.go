@@ -1,10 +1,10 @@
 package dto
 
 import (
+	"github.com/sunil206b/store_utils_go/errors"
 	"github.com/sunil206b/users_api/model"
 	"github.com/sunil206b/users_api/utils/crypt"
 	"github.com/sunil206b/users_api/utils/date"
-	"github.com/sunil206b/users_api/utils/errors"
 	"strings"
 	"time"
 )

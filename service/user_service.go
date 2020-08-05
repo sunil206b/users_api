@@ -2,10 +2,10 @@ package service
 
 import (
 	"database/sql"
+	"github.com/sunil206b/store_utils_go/errors"
 	"github.com/sunil206b/users_api/dto"
 	"github.com/sunil206b/users_api/model"
 	"github.com/sunil206b/users_api/repo"
-	"github.com/sunil206b/users_api/utils/errors"
 	"time"
 )
 

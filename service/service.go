@@ -1,8 +1,8 @@
 package service
 
 import (
+	"github.com/sunil206b/store_utils_go/errors"
 	"github.com/sunil206b/users_api/dto"
-	"github.com/sunil206b/users_api/utils/errors"
 )
 
 type IUserService interface {
