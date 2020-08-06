@@ -23,7 +23,7 @@ func MysqlConn() *sql.DB {
 	mysqlSchema := os.Getenv(mysqlSchema)
 
 	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true",
-		 				mysqlUser, mysqlPass, mysqlHost, mysqlPort, mysqlSchema)
+		mysqlUser, mysqlPass, mysqlHost, mysqlPort, mysqlSchema)
 	mysqlDB, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
 		panic(err)

@@ -11,14 +11,14 @@ import (
 )
 
 const (
-	indexUnique = "unique"
-	userInsert = "INSERT INTO users(first_name, last_name, birth, gender, phone, email, password, created_at, updated_at, status) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-	queryGetUser = "SELECT id, first_name, last_name, birth, gender, phone, email, password, status  FROM users WHERE id=?"
-	queryUpdate = "UPDATE users set first_name=?, last_name=?, birth=?, gender=?, phone=?, email=?, password=?,  updated_at=?, status=? WHERE id=?"
-	queryDelete = "UPDATE users set status=?, updated_at=? WHERE id=?"
-	queryByStatus = "SELECT id, first_name, last_name, birth, gender, phone, email, password, status  FROM users WHERE status=?"
+	indexUnique      = "unique"
+	userInsert       = "INSERT INTO users(first_name, last_name, birth, gender, phone, email, password, created_at, updated_at, status) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+	queryGetUser     = "SELECT id, first_name, last_name, birth, gender, phone, email, password, status  FROM users WHERE id=?"
+	queryUpdate      = "UPDATE users set first_name=?, last_name=?, birth=?, gender=?, phone=?, email=?, password=?,  updated_at=?, status=? WHERE id=?"
+	queryDelete      = "UPDATE users set status=?, updated_at=? WHERE id=?"
+	queryByStatus    = "SELECT id, first_name, last_name, birth, gender, phone, email, password, status  FROM users WHERE status=?"
 	queryFindByEmail = "SELECT id, email, password FROM users WHERE email=? AND status=?"
-	status = "active"
+	status           = "active"
 )
 
 var (
@@ -52,7 +52,7 @@ func (u *userRepo) CreateUser(user *model.User) *errors.RestErr {
 		logger.Error("error when trying to save user", err)
 		return errors.NewInternalServerError("error when trying to save user")
 	}
-	 userId, err := result.LastInsertId()
+	userId, err := result.LastInsertId()
 	if err != nil {
 		logger.Error("error when trying to get user id after save", err)
 		return errors.NewInternalServerError("error when trying to get user id after save")
@@ -61,7 +61,7 @@ func (u *userRepo) CreateUser(user *model.User) *errors.RestErr {
 	return nil
 }
 
-func (u *userRepo)  GetUser(userId int64) (*model.User, *errors.RestErr) {
+func (u *userRepo) GetUser(userId int64) (*model.User, *errors.RestErr) {
 	stmt, err := u.conn.Prepare(queryGetUser)
 	if err != nil {
 		logger.Error("error when trying to prepare get user statement", err)
@@ -102,7 +102,7 @@ func (u *userRepo) UpdateUser(user *model.User) *errors.RestErr {
 	return nil
 }
 
-func (u *userRepo) DeleteUser(userId int64)  *errors.RestErr {
+func (u *userRepo) DeleteUser(userId int64) *errors.RestErr {
 	stmt, err := u.conn.Prepare(queryDelete)
 	if err != nil {
 		logger.Error("error when preparing delete user query", err)

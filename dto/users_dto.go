@@ -1,10 +1,10 @@
 package dto
 
 import (
+	"github.com/sunil206b/store_utils_go/crypto"
 	"github.com/sunil206b/store_utils_go/date"
 	"github.com/sunil206b/store_utils_go/errors"
 	"github.com/sunil206b/users_api/model"
-	"github.com/sunil206b/store_utils_go/crypto"
 	"strings"
 	"time"
 )
@@ -22,9 +22,9 @@ type UserDTO struct {
 }
 
 type LoginUserDTO struct {
-	Id        int64  `json:"id"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
+	Id       int64  `json:"id"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 func (loginUser *LoginUserDTO) CopyToLoginDTO(user *model.LoginUser) {
