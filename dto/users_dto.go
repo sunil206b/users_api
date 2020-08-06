@@ -1,10 +1,10 @@
 package dto
 
 import (
+	"github.com/sunil206b/store_utils_go/date"
 	"github.com/sunil206b/store_utils_go/errors"
 	"github.com/sunil206b/users_api/model"
-	"github.com/sunil206b/users_api/utils/crypt"
-	"github.com/sunil206b/users_api/utils/date"
+	"github.com/sunil206b/store_utils_go/crypto"
 	"strings"
 	"time"
 )
@@ -76,7 +76,7 @@ func (userDTO UserDTO) CopyToUser(user *model.User) *errors.RestErr {
 	user.Gender = userDTO.Gender
 	user.Phone = userDTO.Phone
 	user.Email = userDTO.Email
-	if password := crypt.GetMd5(userDTO.Password); user.Password != password {
+	if password := crypto.GetMd5(userDTO.Password); user.Password != password {
 		user.Password = password
 	}
 	user.DateUpdated = time.Now().UTC()
@@ -127,7 +127,7 @@ func (userDTO *UserDTO) PartialUpdate(user *model.User) *errors.RestErr {
 		user.Email = userDTO.Email
 	}
 	if userDTO.Password != "" {
-		if password := crypt.GetMd5(userDTO.Password); user.Password != password {
+		if password := crypto.GetMd5(userDTO.Password); user.Password != password {
 			user.Password = password
 		}
 	}
