@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/sunil206b/store_utils_go/errors"
-	"github.com/sunil206b/users_api/logger"
+	"github.com/sunil206b/store_utils_go/logger"
 	"github.com/sunil206b/users_api/model"
 	"strings"
 	"time"

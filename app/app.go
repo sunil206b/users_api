@@ -3,7 +3,7 @@ package app
 import (
 	"database/sql"
 	"github.com/gin-gonic/gin"
-	"github.com/sunil206b/users_api/logger"
+	"github.com/sunil206b/store_utils_go/logger"
 )
 
 var (
